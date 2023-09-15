@@ -21,7 +21,7 @@ jobs:
 
 
     - name: Run React Tests
-      working-directory: cient
+      working-directory: client
       run: |
         npm install
         npm test
