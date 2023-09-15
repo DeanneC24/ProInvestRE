@@ -1,7 +1,5 @@
 FROM node:latest
 
-ENV NODE_ENV development
-
 WORKDIR /app/server
 
 COPY ./package*.json /app/server
