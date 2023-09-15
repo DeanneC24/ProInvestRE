@@ -48,3 +48,13 @@ jobs:
            "clearCache": "do_not_clear"
          }
          '
+         curl --request POST \
+              --url https://api.render.com/v1/services/${{ secrets.FRONTEND_RENDER_SERVICE_ID }}/deploys \
+              --header 'accept: application/json' \
+              --header 'authorization: Bearer ${{ secrets.RENDER_TOKEN }}' \
+              --header 'content-type: application/json' \
+              --data '
+         {
+           "clearCache": "do_not_clear"
+         }
+         '
