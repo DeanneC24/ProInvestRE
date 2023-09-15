@@ -38,11 +38,13 @@ jobs:
 
     - name: Deploy to Render
       run: |
-        curl -H "Authorization: Bearer ${{ secrets.RENDER_TOKEN }}" \
-              -d "accept: application/json" \
-              -d "content-type: application/json" \
-              https://api.render.com/v1/${{ secrets.FRONTEND_RENDER_SERVICE_ID }}/deploys
-        curl -H "Authorization: Bearer ${{ secrets.RENDER_TOKEN }}" \
-              -d "accept: application/json" \
-              -d "content-type: application/json" \
-              https://api.render.com/v1/${{ secrets.BACKEND_RENDER_SERVICE_ID }}/deploys
+        curl --request POST \
+              --url https://api.render.com/v1/services/${{ secrets.BACKEND_RENDER_SERVICE_ID }}/deploys \
+              --header 'accept: application/json' \
+              --header 'authorization: Bearer  ${{ secrets.RENDER_TOKEN }}' \
+              --header 'content-type: application/json' \
+              --data '
+         {
+           "clearCache": "do_not_clear"
+         }
+         '
