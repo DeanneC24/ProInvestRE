@@ -15,7 +15,10 @@ jobs:
 
     - name: Run Node Tests
       working-directory: server
-      run: npm test
+      run: |
+        npm install -g jest
+        npm test
+
 
     - name: Run React Tests
       working-directory: cient
