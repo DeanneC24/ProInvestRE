@@ -16,13 +16,15 @@ jobs:
     - name: Run Node Tests
       working-directory: server
       run: |
-        npm install -g jest
+        npm install
         npm test
 
 
     - name: Run React Tests
       working-directory: cient
-      run: npm test
+      run: |
+        npm install
+        npm test
 
     - name: Login to Docker Hub
       uses: docker/login-action@v3

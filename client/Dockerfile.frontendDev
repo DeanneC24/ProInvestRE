@@ -1,5 +1,7 @@
 FROM node:alpine AS build
 
+ENV NODE_ENV development
+
 WORKDIR /app/client
 
 COPY ./package*.json /app/client
