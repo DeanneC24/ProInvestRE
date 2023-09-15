@@ -4,6 +4,7 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile.backendDev
+    image: pro-invest-re_backend:latest
     ports:
       - "8080:8080"
     environment:
@@ -13,5 +14,6 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile.frontendDev
+    image: pro-invest-re_frontend:latest
     ports:
       - "80:80"
