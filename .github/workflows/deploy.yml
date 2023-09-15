@@ -35,3 +35,14 @@ jobs:
       run: |
         docker-compose -f docker-compose.yml build
         docker-compose -f docker-compose.yml push
+
+    - name: Deploy to Render
+      run: |
+        curl -H "Authorization: Bearer ${{ secrets.RENDER_TOKEN }}" \
+              -d "accept: application/json" \
+              -d "content-type: application/json" \
+              https://api.render.com/v1/${{ secrets.FRONTEND_RENDER_SERVICE_ID }}/deploys
+        curl -H "Authorization: Bearer ${{ secrets.RENDER_TOKEN }}" \
+              -d "accept: application/json" \
+              -d "content-type: application/json" \
+              https://api.render.com/v1/${{ secrets.BACKEND_RENDER_SERVICE_ID }}/deploys
