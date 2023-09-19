@@ -1,6 +1,6 @@
 import { Client } from "@elastic/elasticsearch";
 
-const initializeElasticSearchClient = (userRole: String) => {
+const initializeElasticSearchClient = (userRole: string) => {
 
     let client: Client
     if (userRole === 'admin') {

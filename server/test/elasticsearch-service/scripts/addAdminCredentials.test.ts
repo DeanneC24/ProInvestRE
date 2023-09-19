@@ -1,6 +1,6 @@
 import { Client } from '@elastic/elasticsearch'
 import Mock from '@elastic/elasticsearch-mock'
-import { createNewIndex } from '../../../src/elasticsearch-service/scripts/addAdminCredentials'
+import { createNewIndex, addDocument } from '../../../src/elasticsearch-service/scripts/addAdminCredentials'
 
 const indexName: string = 'users'
 const adminDocId: number = 1
@@ -28,7 +28,7 @@ describe("Elasticsearch requests to add new index users index", () => {
         jest.clearAllMocks();
     });
 
-    it(`Should create a new index called users`, async () => {
+    it(`it should create a new index called users`, async () => {
         const res = await createNewIndex(client, indexName)
         expect(res).toEqual({ status: 'ok' })
     })
@@ -51,6 +51,53 @@ describe("Elasticsearch requests to add new index users index", () => {
     })
 })
 
+describe("Elasticsearch request to add admin credentials to the users index", () => {
+    let client: Client
 
+    beforeAll(() => {
+        const mock: Mock = new Mock()
+        client = new Client({
+            node: 'http://localhost:9200',
+            Connection: mock.getConnection()
+        })
+        mock.add({
+            method: ['PUT', 'POST'],
+            path: `/${indexName}/_doc/`, // Add new user with id 1
+            body: {
+                username : adminUsername,
+                password: adminPassword
+            }
+        }, () => {
+            return { status: 'ok' }
+        })
+    })
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it(`it should throw an error if the index doesn't exist`, async () => {
+        const userDoc = {
+            username: adminUsername,
+            password: adminPassword
+        }
+        const logSpy = jest.spyOn(console, 'log');
+        const res = await addDocument(client, 'users', userDoc)
+        expect(res).toBeUndefined()
+        expect(logSpy).toHaveBeenCalledWith("Index users doesn't exist")
+    })
+    
+    it(`it should add a new document in users for admin user`, async () => {
+        const userDoc = {
+            username: adminUsername,
+            password: adminPassword
+        }
+        client.indices.exists = jest.fn().mockResolvedValue({ body: true })
+        const res = await addDocument(client, 'users', userDoc)
+        expect(res).toEqual({ status: 'ok' })
+    })
+
+
+})
 
 
