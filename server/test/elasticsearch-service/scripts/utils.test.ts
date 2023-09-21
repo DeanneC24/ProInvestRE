@@ -1,6 +1,6 @@
 import { Client } from '@elastic/elasticsearch'
 import Mock from '@elastic/elasticsearch-mock'
-import { createNewIndex, addDocument } from '../../../src/elasticsearch-service/scripts/addAdminCredentials'
+import { createNewIndex, addDocument } from '../../../src/elasticsearch-service/scripts/utils'
 
 const indexName: string = 'users'
 const adminDocId: number = 1

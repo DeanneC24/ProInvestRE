@@ -1,32 +1,44 @@
 import { Client } from "@elastic/elasticsearch";
 
 const initializeElasticSearchClient = (userRole: string) => {
+  const cloudId = process.env.ELASTICSEARCH_CLOUD_ID ?? ''
+  let username: string
+  let password: string
+  let client: Client
 
-    let client: Client
+  // If dev environment, override userRole to 'dev' to use local installation of elasticsearch
+  if (process.env.ENV?.toUpperCase() === 'DEV') {
+    client = new Client({
+      node: 'http://localhost:5601/' // Todo: Remove hardcoded
+    })
+    console.log("You're connected to the dev elasticsearch instance")
+  } else {
     if (userRole === 'admin') {
-        client = new Client({
-            cloud: {
-              id: process.env.ELASTICSEARCH_CLOUD_ID ?? '',
-            },
-            auth: {
-              username: process.env.ELASTICSEARCH_ADMIN_USERNAME ?? '',
-              password: process.env.ELASTICSEARCH_ADMIN_PASSWORD ?? '',
-            },
-          })
-    } else {
-        client = new Client({
-            cloud: {
-              id: process.env.ELASTICSEARCH_CLOUD_ID ?? '',
-            },
-            auth: {
-              username: process.env.ELASTICSEARCH_PUBLIC_USERNAME ?? '',
-              password: process.env.ELASTICSEARCH_PUBLIC_PASSWORD ?? '',
-            },
-          });
+      username = process.env.ELASTICSEARCH_ADMIN_USERNAME ?? '',
+      password = process.env.ELASTICSEARCH_ADMIN_PASSWORD ?? ''
+    }  else {
+      username = process.env.ELASTICSEARCH_PUBLIC_USERNAME ?? ''
+      password = process.env.ELASTICSEARCH_PUBLIC_PASSWORD ?? ''
     }
-    client.ping()
-        .then(response => console.log("You are connected to Elasticsearch!"))
-        .catch(error => console.error("Elasticsearch is not connected."))
+  
+    client = new Client({
+      cloud: {
+        id: cloudId
+      },
+      auth: {
+        username: username,
+        password: password
+      }
+    })
+  }
+
+  client.ping()
+      .then(response => console.log(`You are connected to Elasticsearch as ${userRole}!`))
+      .catch(error => console.error(`Unable to connect to Elasticsearch ${userRole}.`))
+
+  return client
 }
 
-export default initializeElasticSearchClient;  
+export default initializeElasticSearchClient
+// export const adminClient = initializeElasticSearchClient('admin')
+// export const publicClient = initializeElasticSearchClient('public')
