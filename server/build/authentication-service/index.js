@@ -8,7 +8,7 @@ const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const authService_1 = require("./services/authService");
 const authenticationService = (0, express_1.default)();
-const PORT = 8012;
+const PORT = 8010;
 authenticationService.use(body_parser_1.default.json());
 authenticationService.use((0, cors_1.default)());
 authenticationService.get('/', async (req, res) => {

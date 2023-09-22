@@ -96,8 +96,6 @@ describe("Elasticsearch request to add admin credentials to the users index", ()
         const res = await addDocument(client, 'users', userDoc)
         expect(res).toEqual({ status: 'ok' })
     })
-
-
 })
 
 

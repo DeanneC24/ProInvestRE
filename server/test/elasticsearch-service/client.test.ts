@@ -6,10 +6,9 @@ describe('initializeElasticSearchClient', () => {
         jest.clearAllMocks()
     })
 
-    it('should initialize a client in development environment', () => {
+    it('should initialize a client in development environment', async () => {
         process.env.ENV = 'DEV'
-        const client: Client = initializeElasticSearchClient('admin')
+        const client: Client = await initializeElasticSearchClient('admin')
         expect(client).toBeDefined()
-    });
-
-});
+    })
+})

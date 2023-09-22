@@ -1,6 +1,6 @@
 import { Client } from "@elastic/elasticsearch";
 
-const initializeElasticSearchClient = (userRole: string) => {
+const initializeElasticSearchClient = async (userRole: string) => {
   const cloudId = process.env.ELASTICSEARCH_CLOUD_ID ?? ''
   let username: string
   let password: string
@@ -33,7 +33,7 @@ const initializeElasticSearchClient = (userRole: string) => {
     })
   }
 
-  client.ping()
+  await client.ping()
       .then(response => console.log(`You are connected to Elasticsearch as ${userRole}!`))
       .catch(error => console.error(`Unable to connect to Elasticsearch ${userRole}.`))
 

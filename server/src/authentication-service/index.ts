@@ -4,13 +4,13 @@ import bodyParser from 'body-parser'
 import { authenticateUser } from './services/authService'
 
 const authenticationService = express()
-const PORT = 8012
-authenticationService.use(bodyParser.json());
+const PORT = 8010
+authenticationService.use(bodyParser.json())
 authenticationService.use(cors())
 
 authenticationService.get('/', async (req, res)  => {
     res.send('Hello World from authenticationService')
-});
+})
 
 authenticationService.get('/auth-user', async (req, res) => {
     try {
