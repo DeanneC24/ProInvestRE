@@ -1,4 +1,4 @@
-import getUser from '../..//../src/elasticsearch-service/queries/authentication'
+import { getUser } from '../..//../src/elasticsearch-service/queries/authentication'
 import { Client } from '@elastic/elasticsearch'
 
 describe('getUser', () => {
