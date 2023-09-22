@@ -57,9 +57,7 @@ describe('getUser', () => {
         })
 
         expect(user).toEqual({
-            _source: {
                 username: username,
-            },
         })
     })
 })

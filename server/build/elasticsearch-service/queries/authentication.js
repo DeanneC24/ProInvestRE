@@ -43,7 +43,7 @@ const getUser = async (client, username) => {
         }
         else {
             console.log(`Successfully retrieved user ${username}`);
-            return response.hits.hits[0];
+            return response.hits.hits[0]['_source'];
         }
     }
     catch (err) {

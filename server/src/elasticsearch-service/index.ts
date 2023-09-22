@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import bodyParser from 'body-parser';
 import { test, getUser, checkIndexExists } from './queries/authentication'
-import initializeElasticSearchClient from './client';
+import initializeElasticSearchClient from './client'
 
 const elasticsearchService = express()
 const PORT = 8010
@@ -11,7 +11,7 @@ elasticsearchService.use(cors())
 const esAdminClient = initializeElasticSearchClient('admin')
 
 elasticsearchService.get('/', async (req, res)  => {
-    res.send('Hello World from elasticsearchService');
+    res.send('Hello World from elasticsearchService')
 });
 
 elasticsearchService.get('/test', async (req, res) => {

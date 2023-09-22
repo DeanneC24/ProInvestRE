@@ -40,33 +40,12 @@ const getUser = async (client: Client, username: string): Promise<object> => {
             return {}
         } else {
             console.log(`Successfully retrieved user ${username}`)
-            return response.hits.hits[0]
+            return response.hits.hits[0]['_source'] as object
         }
     } catch (err) {
         console.error(`Issue retrieving user ${username} from data store`)
         throw err
     }
 }
-
-// const addUsersIndex = async (client: Client) => {
-//     try {
-//         const response = await client.indices.create({
-//             index: 'users',
-//             mappings: {
-//                 properties: {
-//                     username: {
-//                         type: 'keyword'
-//                     },
-//                     password: {
-//                         type: 'keyword'
-//                     }
-//                 }
-//             }
-//         })
-//         return response
-//     } catch (err) {
-//         console.error('Error creating index: ', err)
-//     }
-// }
 
 export { getUser, test, checkIndexExists }  

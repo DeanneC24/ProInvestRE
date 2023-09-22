@@ -9,14 +9,16 @@ dotenv_1.default.config({ path: path.resolve(__dirname, '../.env') });
 const cors_1 = __importDefault(require("cors"));
 const express_1 = __importDefault(require("express"));
 const index_1 = __importDefault(require("./elasticsearch-service/index"));
+const index_2 = __importDefault(require("./authentication-service/index"));
 const PORT = 8080;
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+app.use('/auth', index_2.default);
 app.use('/es', index_1.default);
 app.listen(PORT, () => {
     console.log(`Main application is running on http://localhost:${PORT}`);
 });
 app.get('/', (req, res) => {
-    res.send('Hello World');
+    res.send('Hello World From ProInvestRe');
 });
