@@ -1,5 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.checkIndexExists = exports.test = exports.getUser = void 0;
+const test = async (client) => {
+    const response = await client.ping();
+    console.log(' Successfully pinged client');
+};
+exports.test = test;
+const checkIndexExists = async (client, indexName) => {
+    try {
+        const response = await client.indices.exists({ index: indexName });
+        console.log(`Index ${indexName} exists? ${response}`);
+        return response;
+    }
+    catch (error) {
+        console.error(`Error checking index ${indexName} existence: ${error}`);
+        return false;
+    }
+};
+exports.checkIndexExists = checkIndexExists;
 const getUser = async (client, username) => {
     try {
         const response = await client.search({
@@ -29,43 +47,8 @@ const getUser = async (client, username) => {
         }
     }
     catch (err) {
-        console.error(`Issue retrieving user from data store`);
+        console.error(`Issue retrieving user ${username} from data store`);
         throw err;
     }
 };
-// const checkUserExists = async (client: Client, username: string, password: string): Promise<boolean> => {
-//     try {
-//         const body = await client.search({
-//             index: process.env.ELASTICSEARCH_CREDENTIALS_INDEX,
-//             body: {
-//                 query: {
-//                     bool:{
-//                     must:[
-//                         {
-//                             match: {
-//                                 username: username
-//                             }
-//                         },
-//                         {
-//                             match: {
-//                                 password: password
-//                             }
-//                         },
-//                     ]
-//                     }
-//                 }
-//             }}
-//             // todo return/ log
-//         )
-//         const hits = body.hits.hits
-//         if (hits.length === 0) {
-//             return true
-//         } else {
-//             return false
-//         }
-//     } catch(err) {
-//         console.error('Error checking user: ', err)
-//         throw err
-//     }
-// }
-exports.default = getUser;
+exports.getUser = getUser;

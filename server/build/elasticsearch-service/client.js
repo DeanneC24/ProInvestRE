@@ -10,9 +10,10 @@ const initializeElasticSearchClient = (userRole) => {
     // If dev environment, override userRole to 'dev' to use local installation of elasticsearch
     if (((_b = process.env.ENV) === null || _b === void 0 ? void 0 : _b.toUpperCase()) === 'DEV') {
         client = new elasticsearch_1.Client({
-            node: 'http://localhost:5601/' // Todo: Remove hardcoded
+            node: 'http://localhost:5601' // Todo: Remove hardcoded
         });
-        console.log("You're connected to the dev elasticsearch instance");
+        console.log(`Number of connections: ${client.transport.connectionPool.connections.length}`);
+        console.log(`You're connected to the dev elasticsearch cluster at ${client.transport.connectionPool.connections[0].url.href}`);
     }
     else {
         if (userRole === 'admin') {
@@ -39,5 +40,3 @@ const initializeElasticSearchClient = (userRole) => {
     return client;
 };
 exports.default = initializeElasticSearchClient;
-// export const adminClient = initializeElasticSearchClient('admin')
-// export const publicClient = initializeElasticSearchClient('public')
