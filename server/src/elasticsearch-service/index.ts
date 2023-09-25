@@ -4,12 +4,26 @@ import bodyParser from 'body-parser';
 import { test, getUser, checkIndexExists } from './queries/authentication'
 import elasticClient, {pingElasticSearchClient} from './client'
 
-// check elastic Client is connected
-pingElasticSearchClient(elasticClient)
 const elasticsearchService = express()
 const PORT = 8040
 elasticsearchService.use(bodyParser.json());
 elasticsearchService.use(cors())
+
+// check elastic Client is connected
+if(elasticClient) {
+    pingElasticSearchClient(elasticClient)
+} else {
+    console.warn('No connection to elasticsearch')
+}
+
+// middleware to hahndle api requests when elasticsearch is down
+elasticsearchService.use((req, res, next) => {
+    if (!elasticClient) {
+      const errorMessage = 'Elasticsearch client is not connected.'
+      return res.status(500).json({ error: errorMessage });
+    }
+    next()
+  })
 
 elasticsearchService.get('/', async (req, res)  => {
     res.send('Hello World from elasticsearchService')
@@ -21,11 +35,12 @@ elasticsearchService.get('/test', async (req, res) => {
 
 elasticsearchService.get('/user-index-exists', async (req, res) => {
     try {
-        const usersIndexExists = await checkIndexExists(elasticClient, 'users')
+        const usersIndexExists = await checkIndexExists(elasticClient!, 'users')
         console.log(`From index ${usersIndexExists}`)
         res.json(String(usersIndexExists))
     } catch (err) {
         console.error(err)
+        res.status(500).json({ error: 'An error occurred' })
     }
 })
 
@@ -36,11 +51,12 @@ elasticsearchService.get('/getUser', async (req, res) => {
         console.log(typeof username)
         console.log(username)
         if (typeof username !== 'undefined') {
-            const user: object = await getUser(elasticClient, username)
+            const user: object = await getUser(elasticClient!, username)
             res.json(user)
         }
     } catch (err) {
         console.error(`Issue retrieving user from data store: `, err)
+        res.status(500).json({ error: 'An error occurred'})
     }
 })
 

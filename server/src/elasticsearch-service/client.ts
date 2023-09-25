@@ -1,22 +1,26 @@
 import { Client } from "@elastic/elasticsearch"
 
 export const createElasticSearchClient = () => {
-  if (process.env.ENV?.toUpperCase() === 'DEV') {
-    console.log('Initializing development elasticsearch client..')
-    return new Client({
-      node: 'http://localhost:5601'
-    })
-  } else {
-    console.log('Initializing production elasticsearch client..')
-    return new Client({
-      cloud: {
-        id: process.env.ELASTICSEARCH_CLOUD_ID ?? ''
-      },
-      auth: {
-        username: process.env.ELASTICSEARCH_ADMIN_USERNAME ?? '',
-        password: process.env.ELASTICSEARCH_ADMIN_PASSWORD ?? ''
-      }
-    })
+  try {
+    if (process.env.ENV?.toUpperCase() === 'DEV') {
+      console.log('Initializing development elasticsearch client..')
+      return new Client({
+        node: 'http://localhost:5601'
+      })
+    } else {
+      console.log('Initializing production elasticsearch client..')
+      return new Client({
+        cloud: {
+          id: process.env.ELASTICSEARCH_CLOUD_ID ?? ''
+        },
+        auth: {
+          username: process.env.ELASTICSEARCH_ADMIN_USERNAME ?? '',
+          password: process.env.ELASTICSEARCH_ADMIN_PASSWORD ?? ''
+        }
+      })
+    }
+  } catch (err) {
+    console.error('Error instantiating elasticsearch client: ', err)
   }
 }
 

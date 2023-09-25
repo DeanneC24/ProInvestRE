@@ -13,7 +13,7 @@ jest.mock("@elastic/elasticsearch", () => ({
 }))
 
 describe('elasticsearch client', () => {
-    let elasticClient: Client
+    let elasticClient: Client | undefined
     let consoleLogSpy: jest.SpyInstance
 
     beforeAll(() => {

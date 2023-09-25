@@ -31,12 +31,25 @@ const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const authentication_1 = require("./queries/authentication");
 const client_1 = __importStar(require("./client"));
-// check elastic Client is connected
-(0, client_1.pingElasticSearchClient)(client_1.default);
 const elasticsearchService = (0, express_1.default)();
 const PORT = 8040;
 elasticsearchService.use(body_parser_1.default.json());
 elasticsearchService.use((0, cors_1.default)());
+// check elastic Client is connected
+if (client_1.default) {
+    (0, client_1.pingElasticSearchClient)(client_1.default);
+}
+else {
+    console.warn('No connection to elasticsearch');
+}
+// middleware to hahndle api requests when elasticsearch is down
+elasticsearchService.use((req, res, next) => {
+    if (!client_1.default) {
+        const errorMessage = 'Elasticsearch client is not connected.';
+        return res.status(500).json({ error: errorMessage });
+    }
+    next();
+});
 elasticsearchService.get('/', async (req, res) => {
     res.send('Hello World from elasticsearchService');
 });
@@ -51,6 +64,7 @@ elasticsearchService.get('/user-index-exists', async (req, res) => {
     }
     catch (err) {
         console.error(err);
+        res.status(500).json({ error: 'An error occurred' });
     }
 });
 elasticsearchService.get('/getUser', async (req, res) => {
@@ -66,6 +80,7 @@ elasticsearchService.get('/getUser', async (req, res) => {
     }
     catch (err) {
         console.error(`Issue retrieving user from data store: `, err);
+        res.status(500).json({ error: 'An error occurred' });
     }
 });
 elasticsearchService.listen(PORT, () => {
