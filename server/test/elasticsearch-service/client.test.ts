@@ -28,10 +28,16 @@ describe('elasticsearch client', () => {
     })
 
     it('should initialize a client in development environment', async () => {
+        const prevEnv = process.env.ENV
+        process.env.ENV = 'DEV'
+        process.env.ELASTICSEARCH_CLOUD_ID = 'mockCloudId'
+        process.env.ELASTICSEARCH_ADMIN_USERNAME = 'mockESUsername',
+        process.env.ELASTICSEARCH_ADMIN_PASSWORD ?? 'mockESPw'
         elasticClient = createElasticSearchClient()
         expect(elasticClient).toBeDefined
         expect(consoleLogSpy).toHaveBeenCalled
         expect(consoleLogSpy).toHaveBeenCalledWith('Initializing development elasticsearch client..')
+        process.env.ENV = prevEnv
     })
 
     it('should initialize a client in production environment', async () => {
