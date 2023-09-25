@@ -1,19 +1,18 @@
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@elastic/elasticsearch"
 
-const initializeElasticSearchClient = () => {
-
+export const createElasticSearchClient = () => {
   if (process.env.ENV?.toUpperCase() === 'DEV') {
-    // Initialise connection to local elasticsearch connection
+    console.log('Initializing development elasticsearch client..')
     return new Client({
       node: 'http://localhost:5601'
     })
   } else {
-    // Initialise connection to cloud deployment
+    console.log('Initializing production elasticsearch client..')
     return new Client({
       cloud: {
         id: process.env.ELASTICSEARCH_CLOUD_ID ?? ''
       },
-      auth:{
+      auth: {
         username: process.env.ELASTICSEARCH_ADMIN_USERNAME ?? '',
         password: process.env.ELASTICSEARCH_ADMIN_PASSWORD ?? ''
       }
@@ -21,10 +20,13 @@ const initializeElasticSearchClient = () => {
   }
 }
 
-const elasticClient = initializeElasticSearchClient()
 
-elasticClient.ping()
-  .then(() => console.log(`Elasticsearch client is successfully connected!`))
-  .catch(error => console.error("Elasticsearch client is not connected.", error))
+export const pingElasticSearchClient = async (elasticClient: Client) => {
+    await elasticClient.ping()
+    .then(() => console.log(`Elasticsearch client is successfully connected!`))
+    .catch(err=>console.error("Elasticsearch client is not connected.", err))
+}
+
+const elasticClient = createElasticSearchClient()
 
 export default elasticClient

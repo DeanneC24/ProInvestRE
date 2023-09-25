@@ -2,8 +2,10 @@ import express from 'express'
 import cors from 'cors'
 import bodyParser from 'body-parser';
 import { test, getUser, checkIndexExists } from './queries/authentication'
-import elasticClient from './client'
+import elasticClient, {pingElasticSearchClient} from './client'
 
+// check elastic Client is connected
+pingElasticSearchClient(elasticClient)
 const elasticsearchService = express()
 const PORT = 8040
 elasticsearchService.use(bodyParser.json());

@@ -1,16 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.pingElasticSearchClient = exports.createElasticSearchClient = void 0;
 const elasticsearch_1 = require("@elastic/elasticsearch");
-const initializeElasticSearchClient = () => {
+const createElasticSearchClient = () => {
     var _a, _b, _c, _d;
     if (((_a = process.env.ENV) === null || _a === void 0 ? void 0 : _a.toUpperCase()) === 'DEV') {
-        // Initialise connection to local elasticsearch connection
+        console.log('Initializing development elasticsearch client..');
         return new elasticsearch_1.Client({
             node: 'http://localhost:5601'
         });
     }
     else {
-        // Initialise connection to cloud deployment
+        console.log('Initializing production elasticsearch client..');
         return new elasticsearch_1.Client({
             cloud: {
                 id: (_b = process.env.ELASTICSEARCH_CLOUD_ID) !== null && _b !== void 0 ? _b : ''
@@ -22,8 +23,12 @@ const initializeElasticSearchClient = () => {
         });
     }
 };
-const elasticClient = initializeElasticSearchClient();
-elasticClient.ping()
-    .then(() => console.log(`Elasticsearch client is successfully connected!`))
-    .catch(error => console.error("Elasticsearch client is not connected.", error));
+exports.createElasticSearchClient = createElasticSearchClient;
+const pingElasticSearchClient = async (elasticClient) => {
+    await elasticClient.ping()
+        .then(() => console.log(`Elasticsearch client is successfully connected!`))
+        .catch(err => console.error("Elasticsearch client is not connected.", err));
+};
+exports.pingElasticSearchClient = pingElasticSearchClient;
+const elasticClient = (0, exports.createElasticSearchClient)();
 exports.default = elasticClient;
