@@ -14,15 +14,37 @@ authenticationService.use((0, cors_1.default)());
 authenticationService.get('/', async (req, res) => {
     res.send('Hello World from authenticationService');
 });
+// Real impl to uncomment after elasticsearch issues resolved
 authenticationService.get('/auth-user', async (req, res) => {
     try {
         const username = req.query.username;
-        const password = req.query.username;
+        const password = req.query.password;
         const validUser = await (0, authService_1.authenticateUser)(username, password);
         const isAdmin = username === 'admin' ? true : false;
         const resObj = {
             isValidUser: validUser,
             isAdmin: isAdmin
+        };
+        res.json(resObj);
+    }
+    catch (err) {
+        console.error(err);
+    }
+});
+authenticationService.get('/mock-auth-user', async (req, res) => {
+    try {
+        const username = req.query.username;
+        const password = req.query.password;
+        const isValidStr = req.query.isValid;
+        const isValidBool = Boolean(isValidStr);
+        const isAdmin = username === 'admin' ? true : false;
+        const resObj = {
+            isValidUser: isValidBool,
+            isAdmin: isAdmin,
+            user: {
+                id: isAdmin ? 1 : 2,
+                name: username
+            }
         };
         res.json(resObj);
     }
