@@ -2,4 +2,8 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
+  transformIgnorePatterns: ['/node_modules/(?!(axios)/)'],
+  moduleNameMapper: {
+    '^axios$': require.resolve('axios'),
+  }
 };
