@@ -36,7 +36,7 @@ authenticationService.get('/mock-auth-user', async (req, res) => {
         const username = req.query.username;
         const password = req.query.password;
         const isValidStr = req.query.isValid;
-        const isValidBool = Boolean(isValidStr);
+        const isValidBool = (isValidStr === null || isValidStr === void 0 ? void 0 : isValidStr.toLowerCase()) === 'true';
         const isAdmin = username === 'admin' ? true : false;
         const resObj = {
             isValidUser: isValidBool,
@@ -46,6 +46,7 @@ authenticationService.get('/mock-auth-user', async (req, res) => {
                 name: username
             }
         };
+        console.log(`User ${username} authenticated: ${isValidBool}`);
         res.json(resObj);
     }
     catch (err) {

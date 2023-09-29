@@ -51,10 +51,11 @@ const authUser = async (
     password: password,
     isValid: true // for mock/ testing purposes only
   }
-  const authServRes = await axios.get( // NB hard coded result here
-    `http://localhost:8010/mock-auth-user?username=${user}&password=${password}&isValid=true`
+  const authServRes = await axios.get( // NB hard coded result here, to remove
+    `http://localhost:8010/mock-auth-user?username=${user}&password=${password}&isValid=false`
   )
   let authenticated_user
+  console.log(authServRes.data.isValidUser)
   if (authServRes.data.isValidUser) {
     authenticated_user = authServRes.data.user // TODO ensure auth repsonse matches expectation here 
   } else {
@@ -86,10 +87,9 @@ app.get('/admin-login', (req, res) => {
   res.send("login.ejs")
 })
 
-app.post ('/admin-login', passport.authenticate('local', {
-  successRedirect: "/",
-  failureRedirect: "/admin-login",
-}))
+app.post ('/admin-login', passport.authenticate('local'), (req, res) => {
+  res.json({success: true, username: req.user})
+})
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello World From ProInvestRe')
