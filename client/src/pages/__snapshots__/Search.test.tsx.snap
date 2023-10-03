@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SearchComponent should render the component 1`] = `
+<div>
+  <div
+    class="container"
+  >
+    <div>
+      <button
+        class="search-button active"
+      >
+        Search By Outcode
+      </button>
+      <button
+        class="search-button "
+      >
+        Search By Region
+      </button>
+    </div>
+    <div>
+      <input
+        class="input-field"
+        placeholder="Enter outcode here"
+        type="text"
+        value=""
+      />
+      <button
+        class="search-button"
+      >
+        Search
+      </button>
+      <button
+        class="info-button"
+        data-testid="info-button"
+      >
+        <i
+          class="fa fa-info-circle"
+        />
+      </button>
+      <div
+        class="dashboard"
+      >
+        <div
+          class="outcode-error"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -1,19 +1,20 @@
-import React from 'react';
-import './index.css';
-import reportWebVitals from './reportWebVitals';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Banner from './components/Banner';
+import React from 'react'
+import './index.css'
+import reportWebVitals from './reportWebVitals'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Banner from './components/Banner'
 import HiddenAdminPage from './pages/HiddenAdminStub';//TODO REMOVE 
-import PageDoesntExist from './pages/PageDoesntExist';
-import ReactDOM from 'react-dom/client';
-import AdminLoginPage from './pages/AdminLogin';
+import PageDoesntExist from './pages/PageDoesntExist'
+import ReactDOM from 'react-dom/client'
+import AdminLoginPage from './pages/AdminLogin'
+import Search from './pages/Search'
 
 export default function App() {
   return(
     <BrowserRouter>
     <Banner/>
       <Routes>
-        <Route path='/' element={<h1/>}/>
+        <Route path='/' element={<Search/>}/>
         <Route path='/admin-login' element={<AdminLoginPage/>}/>
         <Route path='*' element={<PageDoesntExist/>}/>
       </Routes>
