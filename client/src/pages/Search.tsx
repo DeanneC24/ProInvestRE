@@ -16,11 +16,15 @@ const SearchComponent: React.FC = () => {
   const [outcode, setOutcode] = useState<string>('')
   const [outcodeSearchResults, setOutcodeSearchResults] = useState<OutcodeSearchResults | null>(null)
   const [regionSearchResults, setRegionSearchResults] = useState<OutcodeSearchResults[] | null>(null)
+  const [outcodeError, setOutcodeError] = useState<string | null>(null);
+  const [regionError, setRegionError] = useState<string | null>(null);
 
   const handleSearchTypeChange = (type: string) => {
     setSearchType(type)
     setOutcodeSearchResults(null)
     setRegionSearchResults(null)
+    setOutcodeError(null)
+    setRegionError(null)
   }
 
   const handleRegionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -53,9 +57,10 @@ const SearchComponent: React.FC = () => {
   
           setOutcodeSearchResults(outcodeData)
         } catch (error) {
-          console.error('Error fetching outcode data:', error)
+          console.error(`Error fetching data for outcode ${outcode}:`, error)
+          setOutcodeError(`Failed to fetch data for outcode ${outcode}. Please try again later.`)
         }
-  };
+  }
 
   const fetchRegionData = async () => {
     try {
@@ -71,7 +76,8 @@ const SearchComponent: React.FC = () => {
 
       setRegionSearchResults(regionData)
     } catch (error) {
-      console.error('Error fetching outcode data:', error)
+      console.error(`Error fetching data for region ${region}:`, error)
+      setRegionError(`Error fetching data for region ${regionOptionLabels[region]}. Please try again later`)
     }
   }
 
@@ -85,16 +91,15 @@ const SearchComponent: React.FC = () => {
   }
 
   const renderOutcodeDashboard = (results: OutcodeSearchResults | null) => {
-    if (!outcodeSearchResults) {
-      return null;
-    }
-
+    if (outcodeError || !results) {
+      return <div className="outcode-error">{outcodeError}</div>
+    } 
     return (
       <div>
         {Object.keys(dashboardMappings).map((key) => (
           <div key={key}>
             <p>
-              {dashboardMappings[key]}: {outcodeSearchResults[key]}
+              {dashboardMappings[key]}: {results[key]}
             </p>
           </div>
         ))}
@@ -103,8 +108,10 @@ const SearchComponent: React.FC = () => {
   }
 
   const renderRegionDashboard = (results: OutcodeSearchResults[] | null) => {
-    if (!results) {
-      return null
+    if (regionError || !results) {
+      return <div className="region-error">{`Issue during data retrieval: ${regionError}`}</div>
+    } else if (!results) {
+      return
     }
     return (
       <div>

@@ -39,7 +39,11 @@ exports[`SearchComponent should render the component 1`] = `
       </button>
       <div
         class="dashboard"
-      />
+      >
+        <div
+          class="outcode-error"
+        />
+      </div>
     </div>
   </div>
 </div>

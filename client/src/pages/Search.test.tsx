@@ -21,31 +21,34 @@ const mockOutcodeData = {
 
 const mockRegionData = {
   data: {
-    outcodeResults: [
-      {
-        outcode: 'W1',
-        avgPrice: 1000,
-        avgRent: 800,
-        avgYield: 5,
-        oneYrGrowth: 2,
-        threeYrGrowth: 5,
-        fiveYrGrowth: 10,
-      },
-      {
-        outcode: 'W2',
-        avgPrice: 1000,
-        avgRent: 800,
-        avgYield: 5,
-        oneYrGrowth: 2,
-        threeYrGrowth: 5,
-        fiveYrGrowth: 10,
-      },
-    ],
+    data: {
+      outcodeResults: [
+        {
+          outcode: 'SW1A',
+          avgPrice: 1000000,
+          avgRent: 2000,
+          avgYield: 5.0,
+          oneYrGrowth: 0.05,
+          threeYrGrowth: 0.15,
+          fiveYrGrowth: 0.25,
+        },
+        {
+          outcode: 'W1A',
+          avgPrice: 1200000,
+          avgRent: 2200,
+          avgYield: 4.5,
+          oneYrGrowth: 0.06,
+          threeYrGrowth: 0.16,
+          fiveYrGrowth: 0.26,
+        },
+      ],
+    }
   },
 }
 
 describe('SearchComponent', () => {
   afterEach(() => {
+    jest.setTimeout(60000);
     jest.clearAllMocks()
   })
 
@@ -64,19 +67,16 @@ describe('SearchComponent', () => {
   it('should fetch outcode data', async () => {
     mockedAxios.get.mockResolvedValueOnce(mockOutcodeData)
 
-    const { getByText, getByPlaceholderText, getByTestId } = render(
-      <SearchComponent />
-    )
+    render(<SearchComponent />)
 
-    const outcodeInput = getByPlaceholderText('Enter outcode here')
+    const outcodeInput = screen.getByPlaceholderText('Enter outcode here')
     fireEvent.change(outcodeInput, { target: { value: 'W1' } })
 
-    const searchButton = getByText('Search')
+    const searchButton = screen.getByText('Search')
     await act(async () => {
         fireEvent.click(searchButton)
          
     })
-    screen.debug()
     await waitFor(() => {
       expect(axios.get).toHaveBeenCalledTimes(1)
       expect(axios.get).toHaveBeenCalledWith(
@@ -84,6 +84,39 @@ describe('SearchComponent', () => {
         { params: { outcode: 'W1' } }
       )
       expect(screen.getByText('Average Price: 1000')).toBeInTheDocument()
+    })
+  })
+
+  it('should fetch region data', async () => {
+    mockedAxios.get.mockResolvedValueOnce(mockRegionData)
+    const mockRegion = 'mock_region'
+    const mockNumOfResults = 5
+    const mockOrderBy = 'asc'
+
+    render(<SearchComponent />)
+
+    const regionButton = screen.getByText('Search By Region')
+    act (() => {
+      fireEvent.click(regionButton)
+    })
+    
+    const regionSelect = screen.getByLabelText('Region:')
+    const numOfResSelect = screen.getByLabelText('Order by:')
+    const orderBySelect = screen.getByLabelText('Number of results:')
+    const searchButton = screen.getByText('Search')
+
+    await act(async() => {
+      fireEvent.change(regionSelect, { target: { value: mockRegion}})
+      fireEvent.change(numOfResSelect, { target: { value: mockNumOfResults}})
+      fireEvent.change(orderBySelect, { target: { value: mockOrderBy}})
+      fireEvent.click(searchButton)
+    })
+
+    await waitFor(() => {
+      expect(mockedAxios.get).toHaveBeenCalledTimes(1)
+      expect(screen.getByText('SW1A')).toBeInTheDocument()
+      expect(screen.getByText('W1A')).toBeInTheDocument()
+      expect(screen.getByText('Three-Year Growth: 0.16')).toBeInTheDocument()
     })
   })
 
