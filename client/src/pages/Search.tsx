@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import { numResultsOptions, regionOptions, regionOptionLabels, orderByOptionLabels } from '../constants'
 import '../styles/search.css'
-import 'font-awesome/css/font-awesome.min.css'; // Import FontAwesome CSS
+import 'font-awesome/css/font-awesome.min.css'
 
 interface OutcodeSearchResults {
   [key: string]: number | string

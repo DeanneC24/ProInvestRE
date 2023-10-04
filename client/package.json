@@ -5,9 +5,13 @@
   "jest": {
     "transformIgnorePatterns": [
       "/node_modules/(?!(axios|react-day-picker)/)"
-    ]
+    ],
+    "moduleNameMapper" : {
+      "\\.(css|less)$": "<rootDir>/__mocks__/styleMock.js"
+    }
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.4.2",
     "@testing-library/user-event": "^13.5.0",
     "@types/react-dom": "^18.2.7",
     "bootstrap": "^5.3.2",
@@ -56,6 +60,7 @@
     "@types/react-bootstrap": "^0.32.32",
     "axios": "^1.5.1",
     "babel-jest": "^29.7.0",
+    "font-awesome": "^4.7.0",
     "jest": "^29.7.0",
     "tailwindcss": "^3.3.3",
     "ts-jest": "^29.1.1"
