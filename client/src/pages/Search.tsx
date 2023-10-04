@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import { numResultsOptions, regionOptions, regionOptionLabels, orderByOptionLabels } from '../constants'
 import '../styles/search.css'
+import 'font-awesome/css/font-awesome.min.css'
 
 interface OutcodeSearchResults {
   [key: string]: number | string
@@ -9,7 +10,7 @@ interface OutcodeSearchResults {
 
 const SearchComponent: React.FC = () => {
   const [searchType, setSearchType] = useState<string>('outcode')
-  const [region, setRegion] = useState<string>('')
+  const [region, setRegion] = useState<string>(regionOptions[0])
   const [orderBy, setOrderBy] = useState<string>('default')
   const [numResults, setNumResults] = useState<number>(10)
   const [showInfo, setShowInfo] = useState<boolean>(false)
@@ -91,9 +92,11 @@ const SearchComponent: React.FC = () => {
   }
 
   const renderOutcodeDashboard = (results: OutcodeSearchResults | null) => {
-    if (outcodeError || !results) {
+    if (outcodeError) {
       return <div className="outcode-error">{outcodeError}</div>
-    } 
+    } else if (!results) {
+      return null
+    }
     return (
       <div>
         {Object.keys(dashboardMappings).map((key) => (
@@ -109,9 +112,10 @@ const SearchComponent: React.FC = () => {
 
   const renderRegionDashboard = (results: OutcodeSearchResults[] | null) => {
     if (regionError || !results) {
-      return <div className="region-error">{`Issue during data retrieval: ${regionError}`}</div>
-    } else if (!results) {
-      return
+      return <div className="region-error">{regionError}</div>
+    }
+    else if (!results) {
+      return null
     }
     return (
       <div>
@@ -158,7 +162,6 @@ const SearchComponent: React.FC = () => {
             className="input-field"
           />
           
-
           <button onClick={fetchOutcodeData} className="search-button">Search</button>
           <button onClick={toggleInfo} className="info-button"  data-testid="info-button">
             <i className="fa fa-info-circle"></i>

@@ -135,6 +135,6 @@ describe('SearchComponent', () => {
       return elementText.includes(infoTextSubstring);
     });
   
-    expect(infoElements.length).toBeGreaterThan(0); // 
+    expect(infoElements.length).toBeGreaterThan(0);
   })
 })
