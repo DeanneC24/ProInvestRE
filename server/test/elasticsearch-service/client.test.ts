@@ -28,30 +28,28 @@ describe('elasticsearch client', () => {
     })
 
     it('should initialize a client in development environment', async () => {
-        const prevEnv = process.env.ENV
-        process.env.ENV = 'DEV'
+        const prevEnv = process.env.NODE_ENV
+        process.env.NODE_ENV = 'DEV'
         process.env.ELASTICSEARCH_CLOUD_ID = 'mockCloudId'
-        process.env.ELASTICSEARCH_ADMIN_USERNAME = 'mockESUsername',
-        process.env.ELASTICSEARCH_ADMIN_PASSWORD ?? 'mockESPw'
+        process.env.ELASTICSEARCH_ADMIN_APIKEY = 'mockAPIKey'
         elasticClient = createElasticSearchClient()
         expect(elasticClient).toBeDefined
         expect(consoleLogSpy).toHaveBeenCalled
         expect(consoleLogSpy).toHaveBeenCalledWith('Initializing development elasticsearch client..')
-        process.env.ENV = prevEnv
+        process.env.NODE_ENV = prevEnv
     })
 
     it('should initialize a client in production environment', async () => {
-        const prevEnv = process.env.ENV
-        process.env.ENV = 'PROD'
+        const prevEnv = process.env.NODE_ENV
+        process.env.NODE_ENV = 'PROD'
         process.env.ELASTICSEARCH_CLOUD_ID = 'mockCloudId'
-        process.env.ELASTICSEARCH_ADMIN_USERNAME = 'mockESUsername',
-        process.env.ELASTICSEARCH_ADMIN_PASSWORD ?? 'mockESPw'
+        process.env.ELASTICSEARCH_ADMIN_APIKEY = 'mockAPIKey'
         jest.resetModules()
         elasticClient = createElasticSearchClient()
         const consoleLogSpy = jest.spyOn(console, 'log') 
         expect(elasticClient).toBeDefined
         expect(consoleLogSpy).toHaveBeenCalledWith('Initializing production elasticsearch client..')
-        process.env.ENV = prevEnv
+        process.env.NODE_ENV = prevEnv
     })
 
 })
