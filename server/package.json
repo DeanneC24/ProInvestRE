@@ -10,7 +10,8 @@
     "lint": "eslint . --ext .ts",
     "lint-and-fix": "eslint . --ext .ts --fix",
     "test": "jest --coverage",
-    "test:dev": "jest --watchAll"
+    "test:dev": "jest --watchAll",
+    "rimraf": "./node_modules/rimraf/bin.js"
   },
   "keywords": [],
   "author": "",
@@ -54,7 +55,7 @@
     "node-mocks-http": "^1.13.0",
     "nodemon": "^3.0.1",
     "passport-mock": "^0.0.3",
-    "rimraf": "^5.0.1",
+    "rimraf": "^5.0.5",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",

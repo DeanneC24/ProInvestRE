@@ -7,43 +7,40 @@ const mockedAxios = axios as jest.Mocked<typeof axios>
 
 const mockOutcodeData = {
   data: {
-    data: {
-        avgPrice: 1000,
-        avgRent: 800,
-        avgYield: 5,
-        oneYrGrowth: 2,
-        threeYrGrowth: 5,
-        fiveYrGrowth: 10,
-    }
-    
-  },
+    outcode: 'SW1A',
+    avg_price: 1000000,
+    avg_rent: 2000,
+    avg_yield: 5.0,
+    growth_1y: 0.05,
+    growth_3y: 0.2,
+    growth_5y: 0.25,
+    region: 'south_east'
+  }
 }
 
 const mockRegionData = {
   data: {
-    data: {
-      outcodeResults: [
-        {
-          outcode: 'SW1A',
-          avgPrice: 1000000,
-          avgRent: 2000,
-          avgYield: 5.0,
-          oneYrGrowth: 0.05,
-          threeYrGrowth: 0.15,
-          fiveYrGrowth: 0.25,
-        },
-        {
-          outcode: 'W1A',
-          avgPrice: 1200000,
-          avgRent: 2200,
-          avgYield: 4.5,
-          oneYrGrowth: 0.06,
-          threeYrGrowth: 0.16,
-          fiveYrGrowth: 0.26,
-        },
-      ],
-    }
-  },
+    data: [
+      {
+        outcode: 'SW1A',
+        avg_price: 1000000,
+        avg_rent: 2000,
+        avg_yield: 5.0,
+        growth_1y: 0.05,
+        growth_3y: 0.15,
+        growth_5y: 0.25
+      },
+      {
+        outcode: 'W1A',
+        avg_price: 1200000,
+        avg_rent: 2200,
+        avg_yield: 4.5,
+        growth_1y: 6.0,
+        growth_3y: 12.8,
+        growth_5y: 24.2
+      }
+    ]
+  }
 }
 
 describe('SearchComponent', () => {
@@ -65,7 +62,11 @@ describe('SearchComponent', () => {
   })
 
   it('should fetch outcode data', async () => {
-    mockedAxios.get.mockResolvedValueOnce(mockOutcodeData)
+    const mockOutcodeResponse = {
+      status: 200,
+      data: mockOutcodeData
+    }
+    mockedAxios.get.mockResolvedValueOnce(mockOutcodeResponse)
 
     render(<SearchComponent />)
 
@@ -74,22 +75,26 @@ describe('SearchComponent', () => {
 
     const searchButton = screen.getByText('Search')
     await act(async () => {
-        fireEvent.click(searchButton)
-         
+      fireEvent.click(searchButton)
     })
     await waitFor(() => {
       expect(axios.get).toHaveBeenCalledTimes(1)
       expect(axios.get).toHaveBeenCalledWith(
-        'http://localhost:8040/search-by-outcode-stub',
+        'http://localhost:8040/search-by-outcode',
         { params: { outcode: 'W1' } }
       )
-      expect(screen.getByText('Average Price: 1000')).toBeInTheDocument()
+      expect(screen.getByText('Average Price: £1,000,000')).toBeInTheDocument()
+      expect(screen.getByText('Average Weekly Rent: £2,000')).toBeInTheDocument()
+      expect(screen.getByText('Average Yield: 5.0%')).toBeInTheDocument()
+      expect(screen.getByText('1 Year Growth: 0.1%')).toBeInTheDocument()
+      expect(screen.getByText('3 Year Growth: 0.2%')).toBeInTheDocument()
+      expect(screen.getByText('5 Year Growth: 0.3%')).toBeInTheDocument()
     })
   })
 
   it('should fetch region data', async () => {
     mockedAxios.get.mockResolvedValueOnce(mockRegionData)
-    const mockRegion = 'mock_region'
+    const mockRegion = 'south_east'
     const mockNumOfResults = 5
     const mockOrderBy = 'asc'
 
@@ -116,7 +121,7 @@ describe('SearchComponent', () => {
       expect(mockedAxios.get).toHaveBeenCalledTimes(1)
       expect(screen.getByText('SW1A')).toBeInTheDocument()
       expect(screen.getByText('W1A')).toBeInTheDocument()
-      expect(screen.getByText('Three-Year Growth: 0.16')).toBeInTheDocument()
+      expect(screen.getByText('3 Year Growth: 12.8%')).toBeInTheDocument()
     })
   })
 

@@ -11,8 +11,8 @@ interface OutcodeSearchResults {
 const SearchComponent: React.FC = () => {
   const [searchType, setSearchType] = useState<string>('outcode')
   const [region, setRegion] = useState<string>(regionOptions[0])
-  const [orderBy, setOrderBy] = useState<string>('default')
-  const [numResults, setNumResults] = useState<number>(10)
+  const [orderBy, setOrderBy] = useState<string>('desc')
+  const [numResults, setNumResults] = useState<number>(5)
   const [showInfo, setShowInfo] = useState<boolean>(false)
   const [outcode, setOutcode] = useState<string>('')
   const [outcodeSearchResults, setOutcodeSearchResults] = useState<OutcodeSearchResults | null>(null)
@@ -42,6 +42,8 @@ const SearchComponent: React.FC = () => {
 
   const handleOutcodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setOutcode(e.target.value)
+    setOutcodeError(null)
+    setOutcodeSearchResults(null)
   }
 
   const toggleInfo = () => {
@@ -49,31 +51,47 @@ const SearchComponent: React.FC = () => {
   }
 
   const fetchOutcodeData = async () => {
-        try {
-          const response = await axios.get(`http://localhost:8040/search-by-outcode-stub`, {
-            params: { outcode: outcode },
-          })
-  
-          const outcodeData: OutcodeSearchResults = response.data.data
-  
-          setOutcodeSearchResults(outcodeData)
-        } catch (error) {
-          console.error(`Error fetching data for outcode ${outcode}:`, error)
-          setOutcodeError(`Failed to fetch data for outcode ${outcode}. Please try again later.`)
-        }
+    try {
+      const response = await axios.get(`http://localhost:8040/search-by-outcode`, {
+        params: { outcode: outcode },
+      })
+
+      if (response.status === 200 && response.data.data) {
+        const outcodeData: OutcodeSearchResults = response.data.data
+        setOutcodeSearchResults(outcodeData)
+      } else if (!response.data.data) {
+        console.error(`No results retrieved for outcode ${outcode}`)
+        setOutcodeError(`No results retrieved for outcode ${outcode}`)
+      } else {
+        console.error(`Received a non 200 status from elasticsearch service, code is: ${response.status}`)
+        setOutcodeError(`Error when retrieving data for ${outcode}`)
+      }
+
+    } catch (error) {
+      console.error(`Error fetching data for outcode ${outcode}:`, error)
+      setOutcodeError(`Failed to fetch data for outcode ${outcode}. Please try again later.`)
+    }
   }
 
   const fetchRegionData = async () => {
     try {
-      const response = await axios.get(`http://localhost:8040/search-by-region-stub`, {
+      const response = await axios.get(`http://localhost:8040/search-by-region`, {
         params: { 
           region: region,
-          orderBy: orderBy,
+          orderBy: 'desc',
           numOfResults: numResults
         },
       })
 
-      const regionData: OutcodeSearchResults[] = response.data.data.outcodeResults
+      const regionData: OutcodeSearchResults[] = response.data.data
+
+      // implement ordering
+      if (regionData) {
+        const sortByAvgYield = orderBy === 'desc' ? -1 : 1
+        regionData.sort((a:OutcodeSearchResults, b: OutcodeSearchResults) => {
+          return ((a.avg_yield as number) - (b.avg_yield as number)) * sortByAvgYield
+        })
+      }
 
       setRegionSearchResults(regionData)
     } catch (error) {
@@ -83,29 +101,57 @@ const SearchComponent: React.FC = () => {
   }
 
   const dashboardMappings: { [key: string]: string } = {
-    avgPrice: 'Average Price',
-    avgRent: 'Average Rent',
-    avgYield: 'Average Yield',
-    oneYrGrowth: '1 Year Growth',
-    threeYrGrowth: '3 Year Growth',
-    fiveYrGrowth: '5 Year Growth',
+    avg_yield: 'Average Yield',
+    avg_price: 'Average Price',
+    avg_rent: 'Average Weekly Rent',
+    growth_1y: '1 Year Growth',
+    growth_3y: '3 Year Growth',
+    growth_5y: '5 Year Growth',
+    region: 'Region',
   }
+
+  const formatNumericalElems = (key: string, value: number | string) => {
+    if (typeof value === 'number') {
+      if (key.includes('growth') || key.includes('avg_yield')) {
+        return `${value.toFixed(1)}%`
+      } else if (typeof value === 'string') {
+        return value
+      } else { // All of the currency amounts
+        return `${value.toLocaleString('en-GB', { 
+          style: 'currency', 
+          currency: 'GBP',
+          maximumFractionDigits: 0
+        })}`
+      }
+    }
+
+  }
+
 
   const renderOutcodeDashboard = (results: OutcodeSearchResults | null) => {
     if (outcodeError) {
       return <div className="outcode-error">{outcodeError}</div>
-    } else if (!results) {
-      return null
-    }
+    } 
     return (
       <div>
-        {Object.keys(dashboardMappings).map((key) => (
-          <div key={key}>
-            <p>
-              {dashboardMappings[key]}: {results[key]}
-            </p>
-          </div>
-        ))}
+        {results && (
+        <>
+          <h3>{typeof results['outcode'] === 'string' ? results['outcode'].toLocaleUpperCase() : results['outcode']}</h3>
+          {Object.keys(dashboardMappings).map((key) => (
+            <div key={key}>
+              {key === 'region' ? (
+                <p>
+                  {dashboardMappings[key]}: {regionOptionLabels[results[key]]}
+                </p>
+              ) : (
+                <p>
+                  {dashboardMappings[key]}: {formatNumericalElems(key, results[key])}
+                </p>
+              )}
+            </div>
+          ))}
+        </>
+      )}
       </div>
     )
   }
@@ -120,15 +166,22 @@ const SearchComponent: React.FC = () => {
     return (
       <div>
         {results.map((result: OutcodeSearchResults, index: number) => (
-          <div key={index}>
+          <div>
             <h3>{result.outcode}</h3>
-            <p>Average Price: {result.avgPrice}</p>
-            <p>Average Rent: {result.avgRent}</p>
-            <p>Average Yield: {result.avgYield}</p>
-            <p>One-Year Growth: {result.oneYrGrowth}</p>
-            <p>Three-Year Growth: {result.threeYrGrowth}</p>
-            <p>Five-Year Growth: {result.fiveYrGrowth}</p>
-          </div>
+            {Object.keys(dashboardMappings).map((key) => (
+              <div key={key}>
+                {key === 'region' ? (
+                  <p>
+                    {dashboardMappings[key]}: {regionOptionLabels[result[key]]}
+                  </p>
+                ) : (
+                  <p>
+                    {dashboardMappings[key]}: {formatNumericalElems(key, result[key])}
+                  </p>
+                )}
+            </div>
+          ))}
+        </div>
         ))}
       </div>
     )
