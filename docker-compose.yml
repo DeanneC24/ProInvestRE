@@ -10,6 +10,9 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=8080
+      - ELASTICSEARCH_CLOUD_ID=${ELASTICSEARCH_CLOUD_ID}
+      - ELASTICSEARCH_ADMIN_APIKEY=${ELASTICSEARCH_ADMIN_APIKEY}
+      - BACKEND_BASE_URL=${BACKEND_BASE_URL}
 
   frontend:
     build:

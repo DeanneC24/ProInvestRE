@@ -32,6 +32,10 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build and Publish Docker Compose
+      env: 
+        ELASTICSEARCH_CLOUD_ID: ${{ secrets.ELASTICSEARCH_CLOUD_ID }}
+        ELASTICSEARCH_ADMIN_APIKEY: ${{ secrets.ELASTICSEARCH_ADMIN_APIKEY }}
+        BACKEND_BASE_URL: ${{ secrets.BACKEND_BASE_URL }}
       run: |
         docker-compose -f docker-compose.yml build
         docker-compose -f docker-compose.yml push

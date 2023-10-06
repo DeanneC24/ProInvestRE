@@ -9,7 +9,7 @@ export const authenticateUser = async (username: string | undefined, password: s
             return false
         }
         const esGetUserResponse = await axios.get(
-            `http://localhost:8010/es/getUser` // TODO remove hardcode
+            `${process.env.BACKEND_BASE_URL}/es/getUser` // TODO remove hardcode
         )
         const userProfile = esGetUserResponse.data
         if (Object.keys(userProfile).length === 0) {
