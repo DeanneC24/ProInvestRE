@@ -52,7 +52,7 @@ const authUser = async (
     isValid: true // for mock/ testing purposes only
   }
   const authServRes = await axios.get( // NB hard coded result here, to remove
-    `http://localhost:8010/mock-auth-user?username=${user}&password=${password}&isValid=false`
+    `${process.env.BACKEND_BASE_URL}/auth/mock-auth-user?username=${user}&password=${password}&isValid=false`
   )
   let authenticated_user
   console.log(authServRes.data.isValidUser)

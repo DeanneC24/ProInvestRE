@@ -23,7 +23,7 @@ const AdminLoginPage: React.FC = () => {
         e.preventDefault()
 
         try {
-            const res = await fetch('http://localhost:8080/admin-login', {
+            const res = await fetch(`${process.env.BACKEND_BASE_URL}/admin-login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

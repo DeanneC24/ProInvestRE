@@ -12,7 +12,7 @@ const authenticateUser = async (username, password) => {
             console.log('Username or password is undefined');
             return false;
         }
-        const esGetUserResponse = await axios_1.default.get(`http://localhost:8010/es/getUser` // TODO remove hardcode
+        const esGetUserResponse = await axios_1.default.get(`${process.env.BACKEND_BASE_URL}/es/getUser` // TODO remove hardcode
         );
         const userProfile = esGetUserResponse.data;
         if (Object.keys(userProfile).length === 0) {

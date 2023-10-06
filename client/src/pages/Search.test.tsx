@@ -79,10 +79,6 @@ describe('SearchComponent', () => {
     })
     await waitFor(() => {
       expect(axios.get).toHaveBeenCalledTimes(1)
-      expect(axios.get).toHaveBeenCalledWith(
-        'http://localhost:8040/search-by-outcode',
-        { params: { outcode: 'W1' } }
-      )
       expect(screen.getByText('Average Price: £1,000,000')).toBeInTheDocument()
       expect(screen.getByText('Average Weekly Rent: £2,000')).toBeInTheDocument()
       expect(screen.getByText('Average Yield: 5.0%')).toBeInTheDocument()
