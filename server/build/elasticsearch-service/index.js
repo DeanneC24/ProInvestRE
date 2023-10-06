@@ -31,6 +31,7 @@ const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const authentication_1 = require("./queries/authentication");
 const client_1 = __importStar(require("./client"));
+const rentalMetrics_1 = require("./queries/rentalMetrics");
 const elasticsearchService = (0, express_1.default)();
 const PORT = 8040;
 elasticsearchService.use(body_parser_1.default.json());
@@ -42,97 +43,70 @@ if (client_1.default) {
 else {
     console.warn('No connection to elasticsearch');
 }
-// middleware to hahndle api requests when elasticsearch is down
-elasticsearchService.use((req, res, next) => {
-    if (!client_1.default) {
-        const errorMessage = 'Elasticsearch client is not connected.';
-        return res.status(500).json({ error: errorMessage });
+// Middleware to handle api requests when elasticsearch is down
+elasticsearchService.use(async (req, res, next) => {
+    try {
+        if (!client_1.default) {
+            throw new Error('Elasticsearch is not connected');
+        }
+        await (0, client_1.pingElasticSearchClient)(client_1.default);
+        next();
     }
-    next();
+    catch (error) {
+        const errorMessage = 'An error occurred establishing a connection to elasticsearch';
+        console.warn(errorMessage);
+        const resObj = {
+            status: 'error',
+            error: error || errorMessage
+        };
+        return res.status(503).json(resObj);
+    }
 });
 elasticsearchService.get('/', async (req, res) => {
     res.send('Hello World from elasticsearchService');
 });
-elasticsearchService.get('/test', async (req, res) => {
-    res.json('Successfully pinged elasticsearch node');
+elasticsearchService.get('/search-by-outcode', async (req, res) => {
+    const passedOutcode = req.query.outcode;
+    try {
+        const searchResults = await (0, rentalMetrics_1.searchByOutcode)(client_1.default, passedOutcode);
+        const resObj = {
+            status: 'success',
+            data: searchResults
+        };
+        res.json(resObj);
+    }
+    catch (err) {
+        const errorMsg = `Error when retrieving data for ${passedOutcode}`;
+        console.log(errorMsg);
+        const resObj = {
+            status: 'error',
+            message: errorMsg
+        };
+        res.status(500).json(resObj);
+    }
 });
-elasticsearchService.get('/search-by-outcode-stub', async (req, res) => {
-    const passedOutcode = req.query.outcoede;
-    const resObj = {
-        success: true,
-        data: {
-            outcode: passedOutcode,
-            avgPrice: 280000,
-            avgRent: 800,
-            avgYield: 2.3,
-            oneYrGrowth: -1,
-            threeYrGrowth: 3,
-            fiveYrGrowth: 5
-        }
-    };
-    res.json(resObj);
-});
-elasticsearchService.get('/search-by-region-stub', async (req, res) => {
+elasticsearchService.get('/search-by-region', async (req, res) => {
     const passedRegion = req.query.region;
     const passedOrderBy = req.query.orderBy;
     const passedNumOfResults = req.query.numOfResults;
     const numOfResultsAsNum = Number(passedNumOfResults);
-    const resObj = {
-        success: true,
-        data: {
-            region: passedRegion,
-            numOfResults: passedNumOfResults,
-            orderBy: passedOrderBy,
-            outcodeResults: [
-                {
-                    outcode: 'OC1',
-                    avgPrice: 281000.5,
-                    avgRent: 1000.0,
-                    avgYield: 5.1,
-                    oneYrGrowth: -1.1,
-                    threeYrGrowth: 3.3,
-                    fiveYrGrowth: 5.4
-                },
-                {
-                    outcode: 'OC2',
-                    avgPrice: 310200.7,
-                    avgRent: 800.0,
-                    avgYield: 4.6,
-                    oneYrGrowth: -1.6,
-                    threeYrGrowth: 3.7,
-                    fiveYrGrowth: 5.4
-                },
-                {
-                    outcode: 'OC3',
-                    avgPrice: 280000.5,
-                    avgRent: 800.0,
-                    avgYield: 2.3,
-                    oneYrGrowth: -1.9,
-                    threeYrGrowth: 3.6,
-                    fiveYrGrowth: 5.2
-                },
-                {
-                    outcode: 'OC4',
-                    avgPrice: 345000.0,
-                    avgRent: 800.0,
-                    avgYield: 2.3,
-                    oneYrGrowth: -2.0,
-                    threeYrGrowth: 2.5,
-                    fiveYrGrowth: 3.6
-                },
-                {
-                    outcode: 'OC5',
-                    avgPrice: 400000.0,
-                    avgRent: 1300.0,
-                    avgYield: 2.3,
-                    oneYrGrowth: -1.0,
-                    threeYrGrowth: 3.1,
-                    fiveYrGrowth: 5.6
-                }
-            ],
-        }
-    };
-    res.json(resObj);
+    try {
+        const searchResults = await (0, rentalMetrics_1.searchByRegion)(client_1.default, passedRegion, numOfResultsAsNum, passedOrderBy);
+        const resObj = {
+            status: 'success',
+            data: searchResults
+        };
+        res.json(resObj);
+    }
+    catch (err) {
+        const errMsg = `Error when retrieving data for ${passedRegion}: ${err}`;
+        console.log(errMsg);
+        const resObj = {
+            status: 'error',
+            message: errMsg
+        };
+        res.status(500).json(resObj);
+    }
 });
 elasticsearchService.get('/user-index-exists', async (req, res) => {
     try {
@@ -165,3 +139,81 @@ elasticsearchService.listen(PORT, () => {
     console.log(`Elasticsearch service is running on http://localhost:${PORT}`);
 });
 exports.default = elasticsearchService;
+// elasticsearchService.get('/search-by-region-stub', async (req, res) => {
+//     const passedRegion = req.query.region as string
+//     const passedOrderBy = req.query.orderBy as string
+//     const passedNumOfResults = req.query.numOfResults as string
+//     const numOfResultsAsNum = Number(passedNumOfResults)
+//     const resObj = {
+//         success: true,
+//         data: {
+//             region: passedRegion,
+//             numOfResults: passedNumOfResults,
+//             orderBy: passedOrderBy,
+//             outcodeResults: [
+//                 {
+//                     outcode: 'OC1',
+//                     avgPrice: 281000.5,
+//                     avgRent: 1000.0,
+//                     avgYield: 5.1,
+//                     oneYrGrowth: -1.1,
+//                     threeYrGrowth: 3.3,
+//                     fiveYrGrowth: 5.4
+//                 },
+//                 {
+//                     outcode: 'OC2',
+//                     avgPrice: 310200.7,
+//                     avgRent: 800.0,
+//                     avgYield: 4.6,
+//                     oneYrGrowth: -1.6,
+//                     threeYrGrowth: 3.7,
+//                     fiveYrGrowth: 5.4
+//                 },
+//                 {
+//                     outcode: 'OC3',
+//                     avgPrice: 280000.5,
+//                     avgRent: 800.0,
+//                     avgYield: 2.3,
+//                     oneYrGrowth: -1.9,
+//                     threeYrGrowth: 3.6,
+//                     fiveYrGrowth: 5.2
+//                 },
+//                 {
+//                     outcode: 'OC4',
+//                     avgPrice: 345000.0,
+//                     avgRent: 800.0,
+//                     avgYield: 2.3,
+//                     oneYrGrowth: -2.0,
+//                     threeYrGrowth: 2.5,
+//                     fiveYrGrowth: 3.6
+//                 },
+//                 {
+//                     outcode: 'OC5',
+//                     avgPrice: 400000.0,
+//                     avgRent: 1300.0,
+//                     avgYield: 2.3,
+//                     oneYrGrowth: -1.0,
+//                     threeYrGrowth: 3.1,
+//                     fiveYrGrowth: 5.6
+//                 }
+//             ],
+//         }
+//     }
+//     res.json(resObj)
+// })
+// elasticsearchService.get('/search-by-outcode-stub', async (req, res) => {
+//     const passedOutcode = req.query.outcode as string
+//     const resObj = {
+//         success: true,
+//         data: {
+//             outcode: passedOutcode,
+//             avgPrice: 280000,
+//             avgRent: 800,
+//             avgYield: 2.3,
+//             oneYrGrowth: -1,
+//             threeYrGrowth: 3,
+//             fiveYrGrowth: 5
+//         }
+//     }
+//     res.json(resObj)
+// })

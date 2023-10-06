@@ -1,0 +1,5 @@
+{
+    "apiUrl": "http://localhost:3000",
+    "databaseUrl": "mongodb://localhost/devdb"
+}
+  
