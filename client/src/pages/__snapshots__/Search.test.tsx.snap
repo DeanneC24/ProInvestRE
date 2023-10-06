@@ -39,7 +39,9 @@ exports[`SearchComponent should render the component 1`] = `
       </button>
       <div
         class="dashboard"
-      />
+      >
+        <div />
+      </div>
     </div>
   </div>
 </div>
