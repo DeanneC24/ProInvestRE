@@ -1,6 +1,8 @@
 FROM node:alpine AS build
 
-ENV NODE_ENV development
+ENV NODE_ENV=development
+
+ENV REACT_APP_BACKEND_BASE_URL=https://pro-invest-re-backend.onrender.com
 
 WORKDIR /app/client
 

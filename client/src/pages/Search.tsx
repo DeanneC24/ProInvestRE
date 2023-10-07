@@ -55,7 +55,7 @@ const SearchComponent: React.FC = () => {
       const response = await axios.get(`${process.env.REACT_APP_BACKEND_BASE_URL}/es/search-by-outcode`, {
         params: { outcode: outcode },
       })
-
+      console.log(process.env.REACT_APP_BACKEND_BASE_URL)
       if (response.status === 200 && response.data.data) {
         const outcodeData: OutcodeSearchResults = response.data.data
         setOutcodeSearchResults(outcodeData)
