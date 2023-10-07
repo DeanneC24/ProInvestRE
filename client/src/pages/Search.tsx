@@ -52,7 +52,7 @@ const SearchComponent: React.FC = () => {
 
   const fetchOutcodeData = async () => {
     try {
-      const response = await axios.get(`${process.env.BACKEND_BASE_URL}/es/search-by-outcode`, {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_BASE_URL}/es/search-by-outcode`, {
         params: { outcode: outcode },
       })
 
@@ -75,7 +75,7 @@ const SearchComponent: React.FC = () => {
 
   const fetchRegionData = async () => {
     try {
-      const response = await axios.get(`${process.env.BACKEND_BASE_URL}/es/search-by-region`, {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_BASE_URL}/es/search-by-region`, {
         params: { 
           region: region,
           orderBy: 'desc',
