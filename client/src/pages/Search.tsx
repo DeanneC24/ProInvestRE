@@ -55,7 +55,6 @@ const SearchComponent: React.FC = () => {
       const response = await axios.get(`${process.env.REACT_APP_BACKEND_BASE_URL}/es/search-by-outcode`, {
         params: { outcode: outcode },
       })
-      console.log(process.env.REACT_APP_BACKEND_BASE_URL)
       if (response.status === 200 && response.data.data) {
         const outcodeData: OutcodeSearchResults = response.data.data
         setOutcodeSearchResults(outcodeData)
@@ -111,6 +110,10 @@ const SearchComponent: React.FC = () => {
   }
 
   const formatNumericalElems = (key: string, value: number | string) => {
+    /*
+      Returns the string for string values, percentages for avg_yield and the 
+      growth metrics and formatted GBP currency amounts for the price metrics
+    */
     if (typeof value === 'number') {
       if (key.includes('growth') || key.includes('avg_yield')) {
         return `${value.toFixed(1)}%`
@@ -137,6 +140,8 @@ const SearchComponent: React.FC = () => {
         {results && (
         <>
           <h3>{typeof results['outcode'] === 'string' ? results['outcode'].toLocaleUpperCase() : results['outcode']}</h3>
+          {/* For each of the dashboard keys, retrive the value in the result object and display it,
+              format the value where necessary */}
           {Object.keys(dashboardMappings).map((key) => (
             <div key={key}>
               {key === 'region' ? (

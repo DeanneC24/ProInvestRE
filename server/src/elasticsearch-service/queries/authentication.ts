@@ -1,10 +1,5 @@
 import { Client } from "@elastic/elasticsearch"
 
-const test = async (client: Client ) => {
-    const response = await client.ping()
-    console.log(' Successfully pinged client')
-}
-
 const checkIndexExists = async (client: Client, indexName: string ) => {
     try {
         const response = await client.indices.exists({ index: indexName });
@@ -48,4 +43,4 @@ const getUser = async (client: Client, username: string): Promise<object> => {
     }
 }
 
-export { getUser, test, checkIndexExists }  
+export { getUser, checkIndexExists }  

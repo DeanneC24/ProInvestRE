@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import bodyParser from 'body-parser';
-import { test, getUser, checkIndexExists } from './queries/authentication'
+import { getUser, checkIndexExists } from './queries/authentication'
 import elasticClient, {pingElasticSearchClient} from './client'
 import { searchByOutcode, searchByRegion } from './queries/rentalMetrics'
 import { Sort, SortOrder } from "@elastic/elasticsearch/lib/api/types"
@@ -124,84 +124,3 @@ elasticsearchService.listen(PORT, () => {
 export default elasticsearchService
 
 
-// elasticsearchService.get('/search-by-region-stub', async (req, res) => {
-//     const passedRegion = req.query.region as string
-//     const passedOrderBy = req.query.orderBy as string
-//     const passedNumOfResults = req.query.numOfResults as string
-//     const numOfResultsAsNum = Number(passedNumOfResults)
-
-//     const resObj = {
-//         success: true,
-//         data: {
-//             region: passedRegion,
-//             numOfResults: passedNumOfResults,
-//             orderBy: passedOrderBy,
-//             outcodeResults: [
-//                 {
-//                     outcode: 'OC1',
-//                     avgPrice: 281000.5,
-//                     avgRent: 1000.0,
-//                     avgYield: 5.1,
-//                     oneYrGrowth: -1.1,
-//                     threeYrGrowth: 3.3,
-//                     fiveYrGrowth: 5.4
-//                 },
-//                 {
-//                     outcode: 'OC2',
-//                     avgPrice: 310200.7,
-//                     avgRent: 800.0,
-//                     avgYield: 4.6,
-//                     oneYrGrowth: -1.6,
-//                     threeYrGrowth: 3.7,
-//                     fiveYrGrowth: 5.4
-//                 },
-//                 {
-//                     outcode: 'OC3',
-//                     avgPrice: 280000.5,
-//                     avgRent: 800.0,
-//                     avgYield: 2.3,
-//                     oneYrGrowth: -1.9,
-//                     threeYrGrowth: 3.6,
-//                     fiveYrGrowth: 5.2
-//                 },
-//                 {
-//                     outcode: 'OC4',
-//                     avgPrice: 345000.0,
-//                     avgRent: 800.0,
-//                     avgYield: 2.3,
-//                     oneYrGrowth: -2.0,
-//                     threeYrGrowth: 2.5,
-//                     fiveYrGrowth: 3.6
-//                 },
-//                 {
-//                     outcode: 'OC5',
-//                     avgPrice: 400000.0,
-//                     avgRent: 1300.0,
-//                     avgYield: 2.3,
-//                     oneYrGrowth: -1.0,
-//                     threeYrGrowth: 3.1,
-//                     fiveYrGrowth: 5.6
-//                 }
-//             ],
-//         }
-//     }
-//     res.json(resObj)
-// })
-
-
-// elasticsearchService.get('/search-by-outcode-stub', async (req, res) => {
-//     const passedOutcode = req.query.outcode as string
-//     const resObj = {
-//         success: true,
-//         data: {
-//             outcode: passedOutcode,
-//             avgPrice: 280000,
-//             avgRent: 800,
-//             avgYield: 2.3,
-//             oneYrGrowth: -1,
-//             threeYrGrowth: 3,
-//             fiveYrGrowth: 5
-//         }
-//     }
-//     res.json(resObj)
-// })

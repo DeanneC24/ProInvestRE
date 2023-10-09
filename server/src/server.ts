@@ -81,9 +81,6 @@ const checkAuthenticated = (req: Request, res: Response, next: NextFunction) => 
 
 app.listen(PORT, () => {
   console.log(`Main application is running on http://localhost:${PORT}`);
-  console.log(`Check to see if env variables parsed from secrets. URL =: ${process.env.BACKEND_BASE_URL}`)
-  console.log(`Check to see if env variables parsed from secrets. ES credentials =: ${process.env.ELASTICSEARCH_CREDENTIALS_INDEX}`)
-
 })
 
 app.get('/admin-login', (req, res) => {

@@ -55,13 +55,17 @@ describe('SearchComponent', () => {
   })
 
   it('should handle search type change', () => {
+    // Given
     const { getByText } = render(<SearchComponent />)
     const regionButton = getByText('Search By Region')
+    // When changing the search by type to region
     fireEvent.click(regionButton)
+    // Then expect that the "active" class has been added to the button
     expect(regionButton.classList.contains('active')).toBe(true)
   })
 
   it('should fetch outcode data', async () => {
+    // Given search component and successful response from outcode elasticsearch query
     const mockOutcodeResponse = {
       status: 200,
       data: mockOutcodeData
@@ -70,6 +74,7 @@ describe('SearchComponent', () => {
 
     render(<SearchComponent />)
 
+    // When a valid outcode in input and the search button is clicked
     const outcodeInput = screen.getByPlaceholderText('Enter outcode here')
     fireEvent.change(outcodeInput, { target: { value: 'W1' } })
 
@@ -77,6 +82,7 @@ describe('SearchComponent', () => {
     await act(async () => {
       fireEvent.click(searchButton)
     })
+    // Then the metrics in the document should be displayed as follows
     await waitFor(() => {
       expect(axios.get).toHaveBeenCalledTimes(1)
       expect(screen.getByText('Average Price: £1,000,000')).toBeInTheDocument()
@@ -89,6 +95,7 @@ describe('SearchComponent', () => {
   })
 
   it('should fetch region data', async () => {
+    // Given search component and successful response from region elasticsearch query
     mockedAxios.get.mockResolvedValueOnce(mockRegionData)
     const mockRegion = 'south_east'
     const mockNumOfResults = 5
@@ -96,6 +103,7 @@ describe('SearchComponent', () => {
 
     render(<SearchComponent />)
 
+    // When search by region is selected and the search parameters are set
     const regionButton = screen.getByText('Search By Region')
     act (() => {
       fireEvent.click(regionButton)
@@ -112,7 +120,7 @@ describe('SearchComponent', () => {
       fireEvent.change(orderBySelect, { target: { value: mockOrderBy}})
       fireEvent.click(searchButton)
     })
-
+    // Then the results in the list of documents are displayed
     await waitFor(() => {
       expect(mockedAxios.get).toHaveBeenCalledTimes(1)
       expect(screen.getByText('SW1A')).toBeInTheDocument()
@@ -122,10 +130,12 @@ describe('SearchComponent', () => {
   })
 
   it('should toggle info', async () => {
+    // Given the search component
     render(<SearchComponent />)
     const infoButton = screen.getByTestId('info-button')
     console.log(infoButton.textContent);
 
+    // When the information button is clicked
     await act(async() => {
         fireEvent.click(infoButton)
     })
@@ -135,7 +145,7 @@ describe('SearchComponent', () => {
       const elementText = node?.textContent || '';
       return elementText.includes(infoTextSubstring);
     });
-  
+    // Then the information text is displayed
     expect(infoElements.length).toBeGreaterThan(0);
   })
 })

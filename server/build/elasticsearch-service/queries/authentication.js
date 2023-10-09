@@ -1,11 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkIndexExists = exports.test = exports.getUser = void 0;
-const test = async (client) => {
-    const response = await client.ping();
-    console.log(' Successfully pinged client');
-};
-exports.test = test;
+exports.checkIndexExists = exports.getUser = void 0;
 const checkIndexExists = async (client, indexName) => {
     try {
         const response = await client.indices.exists({ index: indexName });

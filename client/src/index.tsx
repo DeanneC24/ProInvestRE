@@ -16,7 +16,7 @@ export default function App() {
       <Routes>
         <Route path='/' element={<Search/>}/>
         <Route path='/admin-login' element={<AdminLoginPage/>}/>
-        <Route path='*' element={<PageDoesntExist/>}/>
+        <Route path='/*' element={<PageDoesntExist/>}/>
       </Routes>
     </BrowserRouter>
   )

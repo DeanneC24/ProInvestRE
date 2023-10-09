@@ -1,18 +1,13 @@
 import { Client } from "@elastic/elasticsearch"
 import { searchByOutcode, searchByRegion } from "../../../src/elasticsearch-service/queries/rentalMetrics"
 
-jest.mock("@elastic/elasticsearch", () => ({
-    Client: jest.fn(() => ({
-        search: jest.fn(),
-    })),
-}))
-
 describe("searchByOutcode", () => {
     afterEach(() => {
         jest.clearAllMocks()
     })
 
     it("should return null when no results are found", async () => {
+        // Given an elasticsearch client search response with no hits
         const mockClient = {
             search: jest.fn().mockResolvedValueOnce({
                 hits: {
@@ -21,12 +16,15 @@ describe("searchByOutcode", () => {
             }),
         } as unknown as Client
     
+        // When
         const result = await searchByOutcode(mockClient, "mockOutcode")
     
+        // Then
         expect(result).toBeNull()
       })
 
       it("should return the expected result when one result is found", async () => {
+        // Given an elasticsearch client search response with one hit
         const mockOutcodeDocument = {
             avg_yield: 10,
             avg_rent: 1000,
@@ -51,16 +49,20 @@ describe("searchByOutcode", () => {
             }),
             } as unknown as Client
     
+        // When
         const result = await searchByOutcode(mockClient, "validOutcode")
-    
+            
+        // Then the result should be the matching document
         expect(result).toEqual(mockOutcodeDocument)
     })
 
     it("should throw an error on Elasticsearch error", async () => {
+        // Given an elasticsearch search error
         const mockClient = {
             search: jest.fn().mockRejectedValue(new Error("Elasticsearch error")),
         } as unknown as Client
     
+        // When searchByOutcode, Then an error with the following message is thrown
         await expect(searchByOutcode(mockClient, "validOutcode")).rejects.toThrowError(
           "Error retrieving data for validOutcode: Error: Elasticsearch error"
         )
@@ -87,6 +89,7 @@ describe("searchByRegion", () => {
         
 
     it("should return null for a region with no data", async () => {
+        // Given an elasticsearch client search response with no hits
         const mockClient = {
             search: jest.fn().mockResolvedValueOnce({
                 hits: {
@@ -94,11 +97,14 @@ describe("searchByRegion", () => {
                 },
             }),
         } as unknown as Client
+        // When
         const result = await searchByRegion(mockClient, 'south_east', 2, 'asc')
+        // Then the result should be null
         expect(result).toBeNull()
     })
 
     it("should return search results for a valid region", async () => {
+        // Given an elasticsearch client search response with a list of hits
         const mockClient = {
         search: jest.fn().mockResolvedValueOnce({
             hits: {
@@ -106,8 +112,9 @@ describe("searchByRegion", () => {
             },
         }),
         } as unknown as Client
+        // When
         const result = await searchByRegion(mockClient, 'south_east', 5, 'asc')
-
+        // Then 
         expect(result).toEqual([validResponse[0]._source])
     })
     
