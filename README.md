@@ -28,11 +28,11 @@ It's worth noting that certain aspects of the project remain unfinished due to a
 
 #### Prerequisites
 
-This application has been dockerized for XXX reason. To run the application locally, please ensure you have docker and docker compose installed on your system.
+This application has been dockerized. To run the application locally, please ensure you have docker and docker compose installed on your system.
 
 #### Setting Environment Variables
 
-To run the ProInvestRE backend application, you need to set up the required environment variables. These variables contain essential configuration details for your application. Create a .env file in the project's root directory and add XXX env vars.
+To run the ProInvestRE backend application, you need to set up the required environment variables. These variables contain essential configuration details for your application. Create a .env file in the project's root directory and add the following environment variables.
 
 - `NODE_ENV`
 - `ELASTICSEARCH_ADMIN_APIKEY`
